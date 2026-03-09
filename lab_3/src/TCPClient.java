@@ -204,7 +204,7 @@ public class TCPClient {
     }
 
     // -------------------------------------------------------
-    // Основной лог: и в консоль, и в файл
+    // Основной лог
     // -------------------------------------------------------
     static void log(String msg) {
         String line = "[" + SDF.format(new Date()) + "] " + msg;
@@ -212,14 +212,7 @@ public class TCPClient {
         if (logWriter != null) logWriter.println(line);
     }
 
-    // -------------------------------------------------------
-    // Разбор ввода пользователя:
-    //   READ    <arrayIndex> <row> <col>
-    //   WRITE   <arrayIndex> <row> <col> <value>
-    //   MULTI   <a> <r> <c> [<a> <r> <c> ...]  — группы по 3
-    //   GET_DIM <arrayIndex>
-    // Возвращает { command, params } или null при ошибке
-    // -------------------------------------------------------
+    
     static String[] parseInput(String input) {
         String[] parts = input.trim().split("\\s+", 2);
         String operation = parts[0].toUpperCase();
@@ -254,7 +247,7 @@ public class TCPClient {
     }
 
     // -------------------------------------------------------
-    // Справка — через log(), чтобы попала в файл
+    // Справка
     // -------------------------------------------------------
     static void printHelp() {
         log("╔═══════════════════════════════════════════════════╗");
