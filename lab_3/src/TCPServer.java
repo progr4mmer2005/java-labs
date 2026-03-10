@@ -111,7 +111,7 @@ public class TCPServer {
     }
 
     // -------------------------------------------------------
-    // Лог: и в консоль, и в файл с датой
+    // Лог
     // -------------------------------------------------------
     static void log(String msg) {
         logLock.lock();
@@ -125,7 +125,7 @@ public class TCPServer {
     }
 
     // -------------------------------------------------------
-    // Вывод всех массивов с размерностями — и в консоль, и в лог
+    // Вывод всех массивов
     // -------------------------------------------------------
     static void printArrays(String clientAddr) {
         String who = (clientAddr != null)
@@ -152,7 +152,7 @@ public class TCPServer {
     }
 
     // -------------------------------------------------------
-    // Обработчик клиента (отдельный поток)
+    // Обработчик клиента
     // -------------------------------------------------------
     static class ClientHandler implements Runnable {
         private final Socket socket;
@@ -209,7 +209,7 @@ public class TCPServer {
                     log("РЕЗУЛЬТАТ ДЛЯ КЛИЕНТА " + clientAddr + ": " + result);
                     writer.println(result);
 
-                    // Вывод массивов после каждой операции
+                    // Вывод массивов
                     printArrays(clientAddr);
                 }
 

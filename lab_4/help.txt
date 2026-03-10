@@ -18,10 +18,8 @@ copy C:\Work\java-labs\lab_4\out\production\lab_4\client\SortTask.class C:\Work\
 
 
 СЕРВЕР (rmiregistry) - 1 окно
-
 cd C:\Work\java-labs\lab_4\shared
-
-"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\rmiregistry.exe"
+"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\rmiregistry.exe" -J-Djava.class.path=compute.jar
 
 
 СЕРВЕР - 2 окно
