@@ -4,9 +4,6 @@ import java.util.*;
 
 public class Server {
 
-    private static StringBuilder expressionBuffer = new StringBuilder();
-    private static final Object bufferLock = new Object();
-
     public static void main(String[] args) {
         int port = 8888;
 
@@ -50,46 +47,48 @@ public class Server {
     private static class ClientHandler implements Runnable {
         private Socket socket;
         private String serverLogPath;
+        private StringBuilder expressionBuffer;
 
         public ClientHandler(Socket socket, String logPath) {
             this.socket = socket;
             this.serverLogPath = logPath;
+            this.expressionBuffer = new StringBuilder();
         }
 
         @Override
         public void run() {
             String clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+            logToFile(serverLogPath, "Новое соединение от [" + clientInfo + "]");
+
             try (
                     BufferedReader in = new BufferedReader(
                             new InputStreamReader(socket.getInputStream()));
                     PrintWriter out = new PrintWriter(
                             socket.getOutputStream(), true)
             ) {
-                String line = in.readLine();
-                if (line == null) return;
+                String line;
 
-                logToFile(serverLogPath, "Запрос от [" + clientInfo + "]: " + line);
+                while ((line = in.readLine()) != null) {
+                    logToFile(serverLogPath, "Запрос от [" + clientInfo + "]: " + line);
 
-                synchronized (bufferLock) {
                     expressionBuffer.append(line);
-                }
 
-                if (line.contains("=")) {
-                    String expr;
-                    synchronized (bufferLock) {
-                        expr = expressionBuffer.toString().replace("=", "").trim();
+                    if (line.contains("=")) {
+                        String expr = expressionBuffer.toString().replace("=", "").trim();
                         expressionBuffer.setLength(0);
-                    }
 
-                    String result = evaluateExpression(expr);
-                    out.println(result);
-                    logToFile(serverLogPath, "Ответ для [" + clientInfo + "]: " + result);
+                        String result = evaluateExpression(expr);
+                        out.println(result);
+                        logToFile(serverLogPath, "Ответ для [" + clientInfo + "]: " + result);
+                        break;
+                    }
                 }
 
             } catch (IOException e) {
                 logToFile(serverLogPath, "Ошибка соединения с [" + clientInfo + "]: " + e.getMessage());
             } finally {
                 try { socket.close(); } catch (IOException e) {}
+                logToFile(serverLogPath, "Соединение с [" + clientInfo + "] закрыто");
             }
         }
     }

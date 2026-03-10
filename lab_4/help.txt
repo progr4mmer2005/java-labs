@@ -1,0 +1,38 @@
+Скопировать проект
+
+cd C:\Work\java-labs\lab_4\out\production\lab_4
+
+"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\jar.exe" cvf compute.jar compute\*.class
+
+copy C:\Work\java-labs\lab_4\out\production\lab_4\compute.jar C:\Work\java-labs\lab_4\shared\compute.jar
+
+copy C:\Work\java-labs\lab_4\out\production\lab_4\engine\ComputeEngine.class C:\Work\java-labs\lab_4\server\engine\
+
+
+copy C:\Work\java-labs\lab_4\out\production\lab_4\client\SortTask.class C:\Work\java-labs\lab_4\server\client\
+
+
+copy C:\Work\java-labs\lab_4\out\production\lab_4\client\ComputeClient.class C:\Work\java-labs\lab_4\client\client\
+
+copy C:\Work\java-labs\lab_4\out\production\lab_4\client\SortTask.class C:\Work\java-labs\lab_4\client\client\
+
+
+СЕРВЕР (rmiregistry) - 1 окно
+
+cd C:\Work\java-labs\lab_4\shared
+
+"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\rmiregistry.exe"
+
+
+СЕРВЕР - 2 окно
+
+
+cd C:\Work\java-labs\lab_4\server
+"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\java.exe" -cp .;C:\Work\java-labs\lab_4\shared\compute.jar -Djava.rmi.server.codebase=file:/C:/Work/java-labs/lab_4/shared/compute.jar -Djava.security.policy=file:/C:/Work/java-labs/lab_4/shared/server.policy engine.ComputeEngine
+
+
+
+КЛИЕНТ - 3 окно
+
+cd C:\Work\java-labs\lab_4\client
+"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\java.exe" -cp .;C:\Work\java-labs\lab_4\shared\compute.jar -Djava.security.policy=file:/C:/Work/java-labs/lab_4/client/client.policy client.ComputeClient localhost 5 3 8 1 9 2 7

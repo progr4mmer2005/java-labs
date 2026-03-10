@@ -1,0 +1,7 @@
+grant {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "file:/C:/Work/java-labs/lab_4/shared/compute.jar" {
+    permission java.security.AllPermission;
+};
