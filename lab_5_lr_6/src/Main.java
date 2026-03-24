@@ -5,14 +5,14 @@
 Перевод:  2 1 1 2 2 1 1 1 1 2
 1 — Число ФиО: 2 — задано в коде УО (MAX_FIGURES = 5)
 2 — Тип ФиО: 1 — фигуры (круг, овал, треугольник, квадрат, прямоугольник)
-3  — Задание цвета:           1 — выпадающий список с названиями (6 цветов)
-4  — Выбор запускаемого ФиО:  2 — из текстового поля (вводится название фигуры)
-5  — Начальная скорость:      2 — из выпадающего списка (6 скоростей)
-6  — Выбор запущенного ФиО:   1 — из выпадающего списка
-7  — Присвоение номера:       1 — авто
-8  — Смена номера:            1 — нет
-9  — Регулировка скорости:    1 — указанием в текстовом поле
-10 — Изменение размера окна:  2 — да (отражение ФиО в новых границах)
+3 — Задание цвета: 1 — выпадающий список с названиями (6 цветов)
+4 — Выбор запускаемого ФиО: 2 — из текстового поля (вводится название фигуры)
+5 — Начальная скорость: 2 — из выпадающего списка (6 скоростей)
+6 — Выбор запущенного ФиО: 1 — из выпадающего списка
+7 — Присвоение номера: 1 — авто
+8 — Смена номера: 1 — нет
+9 — Регулировка скорости: 1 — указанием в текстовом поле
+10 — Изменение размера окна: 2 — да (отражение ФиО в новых границах)
 */
 
 import java.util.*;
@@ -22,144 +22,50 @@ import java.awt.event.*;
 
 public class Main {
     static int count = 0;
-    static final int MAX_FIGURES = 5;
 
     public static void main(String[] args) {
-        new Figures();
+        DemoFrame demo = new DemoFrame();
+        new ControlFrame(demo);
     }
 }
 
-class Figures extends Frame implements Observer, ActionListener, Runnable {
+
+
+class DemoFrame extends Frame implements Observer {
 
     private LinkedList LL = new LinkedList();
 
-    private Frame    controlFrame;
-    private Button   startButton;
-    private Button   changeSpeedButton;
-    private Button   deleteButton;
-    private Choice   colorChoice;
-    private Choice   initSpeedChoice;
-    private Choice   selectFigureChoice;
-    private TextField shapeField;
-    private TextField changeSpeedField;
-    private Label    statusLabel;
-
-    private Thread repaintThread;
-
-    Figures() {
-        // --- Демонстрационное окно (ДО) ---
+    DemoFrame() {
         setTitle("Демонстрационное окно (ДО)");
         setSize(640, 520);
         setLocation(0, 0);
         setBackground(Color.white);
         setResizable(true);
         addWindowListener(new WindowAdapter2());
-
-        // Центральный поток перерисовки ~60 fps (убирает лаги от Choice)
-        repaintThread = new Thread(this, "RepaintTimer");
-        repaintThread.setDaemon(true);
-        repaintThread.start();
-
         setVisible(true);
-
-        // Управляющее окно (УО)
-        controlFrame = new Frame();
-        controlFrame.setTitle("Управляющее окно (УО)  |  вариант 56");
-        controlFrame.setSize(480, 430);
-        controlFrame.setLocation(660, 0);
-        controlFrame.setBackground(new Color(230, 230, 230));
-        controlFrame.setLayout(new GridLayout(0, 2, 8, 6));
-        controlFrame.addWindowListener(new WindowAdapter2());
-
-        // Тип фигуры
-        controlFrame.add(new Label("Тип фигуры:"));
-        shapeField = new TextField("круг");
-        controlFrame.add(shapeField);
-
-        controlFrame.add(new Label("Подсказка:"));
-        controlFrame.add(new Label("круг/овал/треугольник/квадрат/прямоугольник"));
-
-        // Цвет
-        controlFrame.add(new Label("Цвет:"));
-        colorChoice = new Choice();
-        colorChoice.addItem("Синий");
-        colorChoice.addItem("Красный");
-        colorChoice.addItem("Зелёный");
-        colorChoice.addItem("Жёлтый");
-        colorChoice.addItem("Чёрный");
-        colorChoice.addItem("Оранжевый");
-        controlFrame.add(colorChoice);
-
-        // Начальная скорость
-        controlFrame.add(new Label("Начальная скорость:"));
-        initSpeedChoice = new Choice();
-        initSpeedChoice.addItem("1 — Очень медленно");
-        initSpeedChoice.addItem("2 — Медленно");
-        initSpeedChoice.addItem("3 — Средняя");
-        initSpeedChoice.addItem("4 — Быстро");
-        initSpeedChoice.addItem("5 — Очень быстро");
-        initSpeedChoice.addItem("6 — Максимальная");
-        initSpeedChoice.select(2);
-        controlFrame.add(initSpeedChoice);
-
-        // Кнопка Пуск
-        controlFrame.add(new Label(""));
-        startButton = new Button("  Пуск  ");
-        startButton.setActionCommand("START");
-        startButton.addActionListener(this);
-        controlFrame.add(startButton);
-
-        // Разделитель
-        controlFrame.add(new Label("--- Управление запущенной фигурой ---"));
-        controlFrame.add(new Label(""));
-
-        // Выбор запущенной фигуры
-        controlFrame.add(new Label("Выбрать фигуру:"));
-        selectFigureChoice = new Choice();
-        controlFrame.add(selectFigureChoice);
-
-        // Изменение скорости
-        controlFrame.add(new Label("Новая скорость (1-6):"));
-        changeSpeedField = new TextField("3");
-        controlFrame.add(changeSpeedField);
-
-        controlFrame.add(new Label(""));
-        changeSpeedButton = new Button("Изменить скорость");
-        changeSpeedButton.setActionCommand("SPEED");
-        changeSpeedButton.addActionListener(this);
-        controlFrame.add(changeSpeedButton);
-
-        // Удаление фигуры
-        controlFrame.add(new Label(""));
-        deleteButton = new Button("Удалить фигуру");
-        deleteButton.setBackground(new Color(200, 60, 60));
-        deleteButton.setForeground(Color.white);
-        deleteButton.setActionCommand("DELETE");
-        deleteButton.addActionListener(this);
-        controlFrame.add(deleteButton);
-
-        // Статус
-        statusLabel = new Label("Фигур запущено: 0 / " + Main.MAX_FIGURES);
-        controlFrame.add(statusLabel);
-        controlFrame.add(new Label(""));
-
-        controlFrame.setVisible(true);
     }
 
-    // Поток центральной перерисовки ДО
-    public void run() {
-        while (true) {
-            repaint();
-            try { Thread.sleep(16); } catch (InterruptedException e) { break; }
-        }
+    public void addFigure(Figure fig) {
+        LL.add(fig);
+        fig.addObserver(this);
     }
 
-    // Observer: фигура уведомляет ДО об изменении координат
+    public void removeFigure(int idx) {
+        ((Figure) LL.get(idx)).stopFigure();
+        LL.remove(idx);
+        repaint();
+    }
+
+    public LinkedList getFigures() {
+        return LL;
+    }
+
+ 
     public void update(Observable o, Object arg) {
-        // Перерисовку делает repaintThread — здесь ничего не нужно
+        repaint();
     }
 
-    // Перерисовка ДО
+
     public void paint(Graphics g) {
         if (!LL.isEmpty()) {
             for (Object obj : LL) {
@@ -169,7 +75,7 @@ class Figures extends Frame implements Observer, ActionListener, Runnable {
         }
     }
 
-    // Двойная буферизация — без мерцания
+
     public void update(Graphics g) {
         Image buf = createImage(getWidth(), getHeight());
         if (buf == null) return;
@@ -180,14 +86,119 @@ class Figures extends Frame implements Observer, ActionListener, Runnable {
         g.drawImage(buf, 0, 0, this);
         bg.dispose();
     }
+}
+
+
+
+class ControlFrame extends Frame implements ActionListener {
+
+    static final int MAX_FIGURES = 5;
+
+    private DemoFrame  demoFrame;
+
+    private Button     startButton;
+    private Button     changeSpeedButton;
+    private Button     deleteButton;
+    private Choice     colorChoice;
+    private Choice     initSpeedChoice;
+    private Choice     selectFigureChoice;
+    private TextField  shapeField;
+    private TextField  changeSpeedField;
+    private Label      statusLabel;
+
+    ControlFrame(DemoFrame demo) {
+        this.demoFrame = demo;
+
+        setTitle("Управляющее окно (УО)  |  вариант 56");
+        setSize(480, 430);
+        setLocation(660, 0);
+        setBackground(new Color(230, 230, 230));
+        setLayout(new GridLayout(0, 2, 8, 6));
+        addWindowListener(new WindowAdapter2());
+
+        // Тип фигуры
+        add(new Label("Тип фигуры:"));
+        shapeField = new TextField("круг");
+        add(shapeField);
+
+        add(new Label("Подсказка:"));
+        add(new Label("круг/овал/треугольник/квадрат/прямоугольник"));
+
+        // Цвет
+        add(new Label("Цвет:"));
+        colorChoice = new Choice();
+        colorChoice.addItem("Синий");
+        colorChoice.addItem("Красный");
+        colorChoice.addItem("Зелёный");
+        colorChoice.addItem("Жёлтый");
+        colorChoice.addItem("Чёрный");
+        colorChoice.addItem("Оранжевый");
+        add(colorChoice);
+
+        // Начальная скорость
+        add(new Label("Начальная скорость:"));
+        initSpeedChoice = new Choice();
+        initSpeedChoice.addItem("1 — Очень медленно");
+        initSpeedChoice.addItem("2 — Медленно");
+        initSpeedChoice.addItem("3 — Средняя");
+        initSpeedChoice.addItem("4 — Быстро");
+        initSpeedChoice.addItem("5 — Очень быстро");
+        initSpeedChoice.addItem("6 — Максимальная");
+        initSpeedChoice.select(2);
+        add(initSpeedChoice);
+
+        // Кнопка Пуск
+        add(new Label(""));
+        startButton = new Button("  Пуск  ");
+        startButton.setActionCommand("START");
+        startButton.addActionListener(this);
+        add(startButton);
+
+        // Разделитель
+        add(new Label("Управление запущенной фигурой"));
+        add(new Label(""));
+
+        // Выбор запущенной фигуры
+        add(new Label("Выбрать фигуру:"));
+        selectFigureChoice = new Choice();
+        add(selectFigureChoice);
+
+        // Изменение скорости
+        add(new Label("Новая скорость (1-6):"));
+        changeSpeedField = new TextField("3");
+        add(changeSpeedField);
+
+        add(new Label(""));
+        changeSpeedButton = new Button("Изменить скорость");
+        changeSpeedButton.setActionCommand("SPEED");
+        changeSpeedButton.addActionListener(this);
+        add(changeSpeedButton);
+
+        // Удаление фигуры
+        add(new Label(""));
+        deleteButton = new Button("Удалить фигуру");
+        deleteButton.setBackground(new Color(200, 60, 60));
+        deleteButton.setForeground(Color.white);
+        deleteButton.setActionCommand("DELETE");
+        deleteButton.addActionListener(this);
+        add(deleteButton);
+
+        // Статус
+        statusLabel = new Label("Фигур запущено: 0 / " + MAX_FIGURES);
+        add(statusLabel);
+        add(new Label(""));
+
+        setVisible(true);
+    }
 
     // Обработка кнопок УО
     public void actionPerformed(ActionEvent aE) {
         String cmd = aE.getActionCommand();
+        LinkedList LL = demoFrame.getFigures();
 
         if (cmd.equals("START")) {
-            if (LL.size() >= Main.MAX_FIGURES) {
-                statusLabel.setText("Максимум: " + Main.MAX_FIGURES + " фигур");
+            if (LL.size() >= MAX_FIGURES) {
+                statusLabel.setText("Максимум: " + MAX_FIGURES + " фигур");
                 return;
             }
             String shape = shapeField.getText().trim().toLowerCase();
@@ -198,11 +209,10 @@ class Figures extends Frame implements Observer, ActionListener, Runnable {
             Color col   = colorFromIndex(colorChoice.getSelectedIndex());
             int   delay = delayFromLevel(initSpeedChoice.getSelectedIndex() + 1);
 
-            Figure fig = new Figure(col, shape, delay, this);
-            LL.add(fig);
-            fig.addObserver(this);
+            Figure fig = new Figure(col, shape, delay, demoFrame);
+            demoFrame.addFigure(fig);
             selectFigureChoice.addItem(fig.thr.getName());
-            statusLabel.setText("Запущено: " + LL.size() + " / " + Main.MAX_FIGURES);
+            statusLabel.setText("Запущено: " + LL.size() + " / " + MAX_FIGURES);
 
         } else if (cmd.equals("SPEED")) {
             int idx = selectFigureChoice.getSelectedIndex();
@@ -228,17 +238,15 @@ class Figures extends Frame implements Observer, ActionListener, Runnable {
                 statusLabel.setText("Выберите фигуру из списка");
                 return;
             }
-            Figure fig = (Figure) LL.get(idx);
-            fig.stopFigure();
-            LL.remove(idx);
+            demoFrame.removeFigure(idx);
             rebuildSelectChoice();
-            statusLabel.setText("Удалена. Запущено: " + LL.size() + " / " + Main.MAX_FIGURES);
+            statusLabel.setText("Удалена. Запущено: " + LL.size() + " / " + MAX_FIGURES);
         }
     }
 
     private void rebuildSelectChoice() {
         selectFigureChoice.removeAll();
-        for (Object obj : LL) {
+        for (Object obj : demoFrame.getFigures()) {
             selectFigureChoice.addItem(((Figure) obj).thr.getName());
         }
     }
@@ -274,6 +282,7 @@ class Figures extends Frame implements Observer, ActionListener, Runnable {
 }
 
 
+
 class Figure extends Observable implements Runnable {
 
     Thread  thr;
@@ -281,14 +290,15 @@ class Figure extends Observable implements Runnable {
     Color   col;
     private String   shape;
     private boolean  xplus, yplus;
+    private int      xStep, yStep;
     private volatile int     delay;
     private volatile boolean running = true;
-    private Figures  demoFrame;
+    private DemoFrame demoFrame;
 
     static final int W = 44;
     static final int H = 34;
 
-    Figure(Color col, String shape, int delay, Figures demoFrame) {
+    Figure(Color col, String shape, int delay, DemoFrame demoFrame) {
         this.col       = col;
         this.shape     = shape;
         this.delay     = delay;
@@ -300,7 +310,6 @@ class Figure extends Observable implements Runnable {
         x = ins.left + 6;
         y = ins.top  + 6;
 
-        // Случайное направление — приращения разные по осям
         Random rnd = new Random();
         int[] steps = {1, 2, 3};
         int vx = steps[rnd.nextInt(3)];
@@ -313,8 +322,6 @@ class Figure extends Observable implements Runnable {
         thr.setDaemon(true);
         thr.start();
     }
-
-    private int xStep, yStep;
 
     public void setDelay(int delay) { this.delay = delay; }
 
@@ -349,7 +356,6 @@ class Figure extends Observable implements Runnable {
     }
 
     public void draw(Graphics g) {
-        // Извлекаем номер из имени потока (формат "N:shape:")
         String num = thr.getName().split(":")[0];
 
         g.setColor(col);
@@ -383,7 +389,7 @@ class Figure extends Observable implements Runnable {
     }
 }
 
-// ОБРАБОТЧИК ЗАКРЫТИЯ ОКНА
+
 
 class WindowAdapter2 extends WindowAdapter {
     public void windowClosing(WindowEvent wE) { System.exit(0); }
