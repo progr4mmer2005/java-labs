@@ -7,20 +7,7 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Лабораторная работа №5. Вариант 56. — Клиент RMI
- *
- * П.4  — параметры запуска клиента передаются через командную строку:
- *         args[0]       = адрес сервера (IP или hostname)
- *         args[1..N]    = целые числа для сортировки
- *
- * Пример запуска:
- *   java ... client.ComputeClient 192.168.1.5 5 3 1 4 1 5 9 2 6
- *
- * П.6  = 1 → используется compute.jar
- * П.7  = 1 → compute.jar берётся из СЕТЕВОЙ папки
- * П.9  = 0 → client.policy лежит ЛОКАЛЬНО на клиенте
- */
+
 public class ComputeClient {
 
     public static void main(String[] args) {

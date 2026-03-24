@@ -18,7 +18,7 @@ copy C:\Work\java-labs\lab_4\out\production\lab_4\client\SortTask.class C:\Work\
 
 
 СЕРВЕР (rmiregistry) - 1 окно
-cd C:\Work\java-labs\lab_4\shared
+cd C:\Users\denna\shared
 "C:\Users\denna\.jdks\temurin-1.8.0_482\bin\rmiregistry.exe" -J-Djava.class.path=compute.jar
 
 
@@ -26,11 +26,11 @@ cd C:\Work\java-labs\lab_4\shared
 
 
 cd C:\Work\java-labs\lab_4\server
-"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\java.exe" -cp .;C:\Work\java-labs\lab_4\shared\compute.jar -Djava.rmi.server.codebase=file:/C:/Work/java-labs/lab_4/shared/compute.jar -Djava.security.policy=file:/C:/Work/java-labs/lab_4/shared/server.policy engine.ComputeEngine
+"C:/Users/denna/.jdks/temurin-1.8.0_482\bin\java.exe" -cp .;C:/Users/denna/shared/compute.jar -Djava.rmi.server.codebase=file:/C:/Users/denna/shared/compute.jar -Djava.security.policy=file:/C:/Users/denna/shared/server.policy engine.ComputeEngine
 
 
 
 КЛИЕНТ - 3 окно
 
 cd C:\Work\java-labs\lab_4\client
-"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\java.exe" -cp .;C:\Work\java-labs\lab_4\shared\compute.jar -Djava.security.policy=file:/C:/Work/java-labs/lab_4/client/client.policy client.ComputeClient localhost 5 3 8 1 9 2 7
+"C:\Users\denna\.jdks\temurin-1.8.0_482\bin\java.exe" -cp .;C:\Users\denna\shared\compute.jar -Djava.security.policy=file:/C:/Work/java-labs/lab_4/client/client.policy client.ComputeClient localhost 5 3 8 1 9 2 7

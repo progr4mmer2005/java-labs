@@ -5,31 +5,17 @@ package engine;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import compute.Task;    // в ComputeEngine.java
-import compute.Compute; // в ComputeEngine.java
+import compute.Task;
+import compute.Compute;
 
-/**
- * Лабораторная работа №5. Вариант 56. — Сервер RMI (ComputeEngine)
- *
- * Принимает задачи от клиентов, выполняет их и возвращает результат.
- *
- * Параметры варианта 56:
- *   П.6  = 1 → compute.jar создаётся
- *   П.8  = 1 → compute.jar на сервере берётся из СЕТЕВОЙ папки
- *   П.10 = 1 → server.policy лежит в СЕТЕВОЙ папке
- *   П.11 = 0 → байт-код SortTask.class лежит ЛОКАЛЬНО на сервере
- *               (codebase указывает на локальную папку сервера)
- */
+
 public class ComputeEngine implements Compute {
 
     public ComputeEngine() {
         super();
     }
 
-    /**
-     * Выполняет переданную задачу и возвращает результат.
-     * Сервер не знает что именно делает задача — только вызывает execute().
-     */
+
     @Override
     public <T> T executeTask(Task<T> t) {
         System.out.println("[СЕРВЕР] Получена задача: " + t.getClass().getName());
