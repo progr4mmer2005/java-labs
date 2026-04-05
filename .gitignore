@@ -1,3 +1,7 @@
 **/bin
 *.class
 /lab_6_lr_7/dist/
+/lab_7_lr_8/nbproject/private/
+/lab_7_lr_8/JSFAppl/nbproject/private/
+/lab_7_lr_8/JSFAppl/build/
+/lab_7_lr_8/JSFAppl/dist/
