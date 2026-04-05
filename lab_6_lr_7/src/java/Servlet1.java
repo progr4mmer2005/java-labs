@@ -43,12 +43,12 @@ public class Servlet1 extends HttpServlet {
 
         try (PrintWriter out = response.getWriter()) {
 
-            // ---- параметры из URL ----
-            String nums      = request.getParameter("nums");
-            String reset     = request.getParameter("reset");
-            String name      = request.getParameter("name");
+            // параметры из URL
+            String nums = request.getParameter("nums");
+            String reset = request.getParameter("reset");
+            String name = request.getParameter("name");
             String institute = request.getParameter("institute");
-            String group     = request.getParameter("group");
+            String group = request.getParameter("group");
 
             // П.8 = 1: сброс цикла до указанного значения через параметр reset=N
             if (reset != null) {
@@ -70,9 +70,9 @@ public class Servlet1 extends HttpServlet {
             }
 
             // П.10: сортировка по возрастанию (функция из ЛР1)
-            String sortedResult   = "";
+            String sortedResult = "";
             String originalResult = "";
-            String sortError      = "";
+            String sortError = "";
 
             if (nums != null && !nums.trim().isEmpty()) {
                 try {
@@ -101,7 +101,7 @@ public class Servlet1 extends HttpServlet {
                 sortError = "Числа не переданы. Пример: ?nums=5,3,1,4,2";
             }
 
-            // ---- HTML ----
+            // HTML
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -123,12 +123,12 @@ public class Servlet1 extends HttpServlet {
             // П.5 = 0: показываем триггер
             out.println("<p>Триггер (меняется при каждом обращении): <b>" + Servlet1.trigger + "</b></p>");
 
-            // П.7 = 1: если достигнут максимум — надпись ВНЕ таблицы
+            // П.7 = 1: если достигнут максимум — надпись вне таблицы
             if (maxReached) {
                 out.println("<p style=\"color:red;\"><b>Дальнейшее увеличение размера текста невозможно!</b></p>");
             }
 
-            // П.6 = 0: таблица БЕЗ видимых границ, ОДИН столбец, строки сверху вниз
+            // П.6 = 0: таблица без видимых границ, один столбец, строки сверху вниз
             out.println("<h" + Servlet1.cycle + ">");
             out.println("<table>");
 

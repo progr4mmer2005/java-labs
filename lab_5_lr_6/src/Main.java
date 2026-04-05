@@ -2,12 +2,12 @@
 Вариант 56
 Число: 609
 Двоичный код: 1 0 0 1 1 0 0 0 0 1
-Перевод:  2 1 1 2 2 1 1 1 1 2
+Перевод: 2 1 1 2 2 1 1 1 1 2
 1 — Число ФиО: 2 — задано в коде УО (MAX_FIGURES = 5)
-2 — Тип ФиО: 1 — фигуры (круг, овал, треугольник, квадрат, прямоугольник)
-3 — Задание цвета: 1 — выпадающий список с названиями (6 цветов)
+2 — Тип ФиО: 1 — фигуры
+3 — Задание цвета: 1 — выпадающий список с названиями
 4 — Выбор запускаемого ФиО: 2 — из текстового поля (вводится название фигуры)
-5 — Начальная скорость: 2 — из выпадающего списка (6 скоростей)
+5 — Начальная скорость: 2 — из выпадающего списка
 6 — Выбор запущенного ФиО: 1 — из выпадающего списка
 7 — Присвоение номера: 1 — авто
 8 — Смена номера: 1 — нет
@@ -96,15 +96,15 @@ class ControlFrame extends Frame implements ActionListener {
 
     private DemoFrame  demoFrame;
 
-    private Button     startButton;
-    private Button     changeSpeedButton;
-    private Button     deleteButton;
-    private Choice     colorChoice;
-    private Choice     initSpeedChoice;
-    private Choice     selectFigureChoice;
-    private TextField  shapeField;
-    private TextField  changeSpeedField;
-    private Label      statusLabel;
+    private Button startButton;
+    private Button changeSpeedButton;
+    private Button deleteButton;
+    private Choice colorChoice;
+    private Choice initSpeedChoice;
+    private Choice selectFigureChoice;
+    private TextField shapeField;
+    private TextField changeSpeedField;
+    private Label statusLabel;
 
     ControlFrame(DemoFrame demo) {
         this.demoFrame = demo;
@@ -286,11 +286,11 @@ class ControlFrame extends Frame implements ActionListener {
 class Figure extends Observable implements Runnable {
 
     Thread  thr;
-    int     x, y;
+    double  x, y;
     Color   col;
     private String   shape;
     private boolean  xplus, yplus;
-    private int      xStep, yStep;
+    private double   vx, vy;
     private volatile int     delay;
     private volatile boolean running = true;
     private DemoFrame demoFrame;
@@ -299,9 +299,9 @@ class Figure extends Observable implements Runnable {
     static final int H = 34;
 
     Figure(Color col, String shape, int delay, DemoFrame demoFrame) {
-        this.col       = col;
-        this.shape     = shape;
-        this.delay     = delay;
+        this.col = col;
+        this.shape = shape;
+        this.delay = delay;
         this.demoFrame = demoFrame;
 
         xplus = true; yplus = true;
@@ -311,11 +311,18 @@ class Figure extends Observable implements Runnable {
         y = ins.top  + 6;
 
         Random rnd = new Random();
-        int[] steps = {1, 2, 3};
-        int vx = steps[rnd.nextInt(3)];
-        int vy = steps[rnd.nextInt(3)];
-        if (vx == vy) vy = (vy == 3) ? 1 : vy + 1;
-        xStep = vx; yStep = vy;
+        double angle = Math.toRadians(0 + rnd.nextInt(90));
+
+        double speed;
+        if (delay >= 65) speed = 1;
+        else if (delay >= 48) speed = 2;
+        else if (delay >= 32) speed = 3;
+        else if (delay >= 20) speed = 4;
+        else if (delay >= 12) speed = 5;
+        else speed = 6;
+
+        vx = speed * Math.cos(angle);
+        vy = speed * Math.sin(angle);
 
         Main.count++;
         thr = new Thread(this, Main.count + ":" + shape + ":");
@@ -333,10 +340,10 @@ class Figure extends Observable implements Runnable {
     public void run() {
         while (running) {
             Insets ins  = demoFrame.getInsets();
-            int    minX = ins.left;
-            int    minY = ins.top;
-            int    maxX = demoFrame.getWidth()  - ins.right  - W;
-            int    maxY = demoFrame.getHeight() - ins.bottom - H;
+            int minX = ins.left;
+            int minY = ins.top;
+            int maxX = demoFrame.getWidth()  - ins.right  - W;
+            int maxY = demoFrame.getHeight() - ins.bottom - H;
             if (maxX < minX) maxX = minX;
             if (maxY < minY) maxY = minY;
 
@@ -345,8 +352,8 @@ class Figure extends Observable implements Runnable {
             if (y >= maxY) yplus = false;
             if (y <= minY) yplus = true;
 
-            if (xplus) x += xStep; else x -= xStep;
-            if (yplus) y += yStep; else y -= yStep;
+            if (xplus) x += vx; else x -= vx;
+            if (yplus) y += vy; else y -= vy;
 
             setChanged();
             notifyObservers(this);
@@ -358,37 +365,39 @@ class Figure extends Observable implements Runnable {
     public void draw(Graphics g) {
         String num = thr.getName().split(":")[0];
 
+        int drawX = (int) x;
+        int drawY = (int) y;
+
         g.setColor(col);
         switch (shape) {
             case "круг":
-                g.fillOval(x, y, W, W);
+                g.fillOval(drawX, drawY, W, W);
                 break;
             case "овал":
-                g.fillOval(x, y, W, H);
+                g.fillOval(drawX, drawY, W, H);
                 break;
             case "треугольник":
                 g.fillPolygon(
-                        new int[]{ x + W/2, x,      x + W },
-                        new int[]{ y,       y + H,  y + H },
+                        new int[]{ drawX + W/2, drawX,      drawX + W },
+                        new int[]{ drawY,       drawY + H,  drawY + H },
                         3
                 );
                 break;
             case "квадрат":
-                g.fillRect(x, y, W, W);
+                g.fillRect(drawX, drawY, W, W);
                 break;
             case "прямоугольник":
-                g.fillRect(x, y, W, H);
+                g.fillRect(drawX, drawY, W, H);
                 break;
             default:
-                g.fillOval(x, y, W, W);
+                g.fillOval(drawX, drawY, W, W);
                 break;
         }
         g.setColor(Color.black);
         g.setFont(new Font("Arial", Font.BOLD, 12));
-        g.drawString(num, x + W/2 - 4, y - 4);
+        g.drawString(num, drawX + W/2 - 4, drawY - 4);
     }
 }
-
 
 
 class WindowAdapter2 extends WindowAdapter {
